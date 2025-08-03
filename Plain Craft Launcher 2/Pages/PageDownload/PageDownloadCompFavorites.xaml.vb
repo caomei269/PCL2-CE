@@ -515,6 +515,8 @@ Public Class PageDownloadCompFavorites
             If SearchResult.Contains(Item) Then SearchResult.Remove(Item)
             CurrentFavTarget.Favs.Remove(Item.Tag.Id)
             CompFavorites.Save()
+            ' 触发收藏状态改变事件，让其他页面同步更新
+            CompFavorites.RaiseFavoriteStatusChanged()
             If Not CompItemList.Any Then FrmDownloadCompFavorites.PageLoaderRestart()
         Catch ex As Exception
             Log(ex, "[CompFavourites] 移除收藏时发生错误")
@@ -620,6 +622,8 @@ Public Class PageDownloadCompFavorites
                                       If res = 2 Then
                                           CompFavorites.FavoritesList.Remove(CurrentFavTarget)
                                           CompFavorites.Save()
+                                          ' 触发收藏状态改变事件，让搜索页同步更新
+                                          CompFavorites.RaiseFavoriteStatusChanged()
                                           Hint("已删除收藏夹", HintType.Finish)
                                           RefreshFavTargets()
                                           ComboTargetFav.SelectedIndex = 0

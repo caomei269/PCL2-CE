@@ -617,6 +617,13 @@ Public Module ModComp
         ''' <summary>
         ''' 将当前工程信息实例化为控件。
         ''' </summary>
+        ' 检查资源是否被收藏
+        Public ReadOnly Property IsFavorited As Boolean
+            Get
+                Return CompFavorites.FavoritesList.Any(Function(fav) fav.Favs.Contains(Id))
+            End Get
+        End Property
+
         Public Function ToCompItem(ShowMcVersionDesc As Boolean, ShowLoaderDesc As Boolean) As MyCompItem
             '获取版本描述
             Dim GameVersionDescription As String
@@ -700,7 +707,13 @@ Public Module ModComp
             Else
                 NewItem.SubTitle = Title.Value
             End If
-            NewItem.Tags = Tags
+            ' 添加收藏状态到标签和图标
+            Dim displayTags As New List(Of String)(Tags)
+            If IsFavorited Then
+                displayTags.Insert(0, "已收藏")
+            End If
+            NewItem.Tags = displayTags
+            NewItem.ShowFavorite = IsFavorited
             NewItem.Description = Description.Replace(vbCr, "").Replace(vbLf, "")
             '下边栏
             If Not ShowMcVersionDesc AndAlso Not ShowLoaderDesc Then
@@ -1798,6 +1811,15 @@ Retry:
         ''' </summary>
         ''' <param name="Project"></param>
         ''' <param name="Pos"></param>
+        Public Shared Event FavoriteStatusChanged()
+        
+        ''' <summary>
+        ''' 触发收藏状态改变事件
+        ''' </summary>
+        Public Shared Sub RaiseFavoriteStatusChanged()
+            RaiseEvent FavoriteStatusChanged()
+        End Sub
+
         Public Shared Sub ShowMenu(Project As CompProject, Pos As UIElement)
             Dim Body As New ContextMenu()
             For Each i In FavoritesList
@@ -1822,6 +1844,8 @@ Retry:
                                                    Hint($"已将 {Project.TranslatedName} 添加到 {i.Name} 中", HintType.Finish)
                                                End If
                                                Save()
+                                               ' 触发收藏状态改变事件
+                                               RaiseEvent FavoriteStatusChanged()
                                            Catch ex As Exception
                                                Log(ex, "[CompFavorites] 改变收藏项出错")
                                            End Try

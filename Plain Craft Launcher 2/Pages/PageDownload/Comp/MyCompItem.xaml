@@ -26,10 +26,14 @@
         </Border.Clip>
         <local:MyImage x:Name="PathLogo" RenderOptions.BitmapScalingMode="HighQuality" FallbackSource="pack://application:,,,/images/Icons/NoIcon.png" />
     </Border>
+
     <!-- 标题 -->
     <StackPanel Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="1" VerticalAlignment="Bottom" Margin="0,1,0,0" Orientation="Horizontal" 
                 IsHitTestVisible="False" SnapsToDevicePixels="False" UseLayoutRounding="False">
         <TextBlock x:Name="LabTitle" TextTrimming="WordEllipsis" FontSize="14" Foreground="{DynamicResource ColorBrush1}" />
+        <Path x:Name="PathFavorite" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="4,0,0,2" 
+              Fill="#FF000000" Stretch="Uniform" Height="12" Width="12" Visibility="Collapsed"
+              Data="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
         <TextBlock x:Name="LabTitleRaw" TextTrimming="WordEllipsis" FontSize="12" Foreground="{StaticResource ColorBrushGray1}" Opacity="0.4" VerticalAlignment="Bottom" Visibility="Collapsed" />
     </StackPanel>
     <!-- Tag 与 详情 -->

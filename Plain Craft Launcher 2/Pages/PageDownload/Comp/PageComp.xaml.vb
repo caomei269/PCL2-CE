@@ -1,4 +1,4 @@
-﻿Imports System.Windows.Markup
+Imports System.Windows.Markup
 
 <ContentProperty("SearchTags")>
 Public Class PageComp
@@ -103,6 +103,40 @@ Public Class PageComp
         IsLoaderInited = True
         CType(Parent, MyPageRight).PageLoaderInit(Load, PanLoad, PanContent, PanAlways, Loader, AddressOf Load_OnFinish, AddressOf LoaderInput)
         If McVersionHighest = -1 Then McVersionHighest = Math.Max(McVersionHighest, Integer.Parse(CType(TextSearchVersion.Items(1), MyComboBoxItem).Content.ToString.Split(".")(1)))
+        ' 添加收藏状态改变事件监听器
+        AddHandler CompFavorites.FavoriteStatusChanged, AddressOf UpdateFavoriteStatus
+    End Sub
+
+    ''' <summary>
+    ''' 更新列表中所有项目的收藏状态显示
+    ''' </summary>
+    Private Sub UpdateFavoriteStatus()
+        Try
+            For Each item As MyCompItem In PanProjects.Children
+                ' 通过 Tag 属性获取 CompProject 对象
+                Dim project As CompProject = TryCast(item.Tag, CompProject)
+                If project IsNot Nothing Then
+                    Dim isFavorited As Boolean = CompFavorites.FavoritesList.Any(Function(fav) fav.Favs.Contains(project.Id))
+                    
+                    ' 更新收藏图标
+                    item.ShowFavorite = isFavorited
+                    
+                    ' 更新标签列表
+                    ' 首先获取原始标签列表（不包含"已收藏"）
+                    Dim displayTags As New List(Of String)(project.Tags)
+                    
+                    ' 如果已收藏，则在标签列表开头添加"已收藏"
+                    If isFavorited Then
+                        displayTags.Insert(0, "已收藏")
+                    End If
+                    
+                    ' 更新控件的标签显示
+                    item.Tags = displayTags
+                End If
+            Next
+        Catch ex As Exception
+            Log(ex, "[PageComp] 更新收藏状态出错", LogLevel.Debug)
+        End Try
     End Sub
     Private Function LoaderInput() As CompProjectRequest
         Dim Request As New CompProjectRequest(PageType, Storage, (Page + 1) * PageSize)

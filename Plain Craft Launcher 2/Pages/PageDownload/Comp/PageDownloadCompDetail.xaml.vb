@@ -256,6 +256,8 @@
         If IsFirstInit Then
             '在 Me.Initialized 已经初始化了加载器，不再重复初始化
             IsFirstInit = False
+            '添加收藏状态改变事件监听
+            AddHandler CompFavorites.FavoriteStatusChanged, AddressOf UpdateFavoritesButton
         Else
             PageLoaderRestart(IsForceRestart:=True)
         End If
@@ -265,6 +267,9 @@
         CompItem.CanInteraction = False
         CompItem.Margin = New Thickness(-7, -7, 0, 8)
         PanIntro.Children.Insert(0, CompItem)
+
+        '更新收藏按钮文本和标题旁的红心图标
+        UpdateFavoritesButton()
 
         '决定按钮显示
         BtnIntroWeb.Text = If(Project.FromCurseForge, "CurseForge", "Modrinth")
@@ -474,6 +479,22 @@
     Private Sub BtnIntroLinkCopy_Click(sender As Object, e As EventArgs) Handles BtnIntroLinkCopy.Click
         CompClipboard.CurrentText = Project.Website
         ClipboardSet(Project.Website)
+    End Sub
+
+    Private Sub UpdateFavoritesButton()
+        If Project Is Nothing Then Return
+        Dim isFavorited = Project.IsFavorited
+        If isFavorited Then
+           BtnFavorites.Text = "已收藏"
+            BtnFavorites.Logo = "M512 896a42.666667 42.666667 0 0 1-30.293333-12.373333l-331.52-331.946667a224.426667 224.426667 0 0 1 0-315.733333 223.573333 223.573333 0 0 1 315.733333 0L512 282.026667l46.08-46.08a223.573333 223.573333 0 0 1 315.733333 0 224.426667 224.426667 0 0 1 0 315.733333l-331.52 331.946667A42.666667 42.666667 0 0 1 512 896z"
+        Else
+            BtnFavorites.Text = "收藏"
+            BtnFavorites.Logo = "M512 896a42.666667 42.666667 0 0 1-30.293333-12.373333l-331.52-331.946667a224.426667 224.426667 0 0 1 0-315.733333 223.573333 223.573333 0 0 1 315.733333 0L512 282.026667l46.08-46.08a223.573333 223.573333 0 0 1 315.733333 0 224.426667 224.426667 0 0 1 0 315.733333l-331.52 331.946667A42.666667 42.666667 0 0 1 512 896zM308.053333 256a136.533333 136.533333 0 0 0-97.28 40.106667 138.24 138.24 0 0 0 0 194.986666L512 792.746667l301.226667-301.653334a138.24 138.24 0 0 0 0-194.986666 141.653333 141.653333 0 0 0-194.56 0l-76.373334 76.8a42.666667 42.666667 0 0 1-60.586666 0L405.333333 296.106667A136.533333 136.533333 0 0 0 308.053333 256z"
+        End If
+        '同步更新标题旁的红心图标
+        If CompItem IsNot Nothing Then
+            CompItem.ShowFavorite = isFavorited
+        End If
     End Sub
     '翻译简介
     Private Async Sub BtnTranslate_Click(sender As Object, e As EventArgs) Handles BtnTranslate.Click

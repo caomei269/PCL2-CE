@@ -87,6 +87,13 @@ Public Class MyCompItem
         End Set
     End Property
 
+    '收藏状态
+    Public WriteOnly Property ShowFavorite As Boolean
+        Set(value As Boolean)
+            PathFavorite.Visibility = If(value, Visibility.Visible, Visibility.Collapsed)
+        End Set
+    End Property
+
 #End Region
 
 #Region "点击"
